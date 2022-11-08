@@ -18,7 +18,7 @@ function ArtItem(props: any) {
   const submit = () => {
     console.log("Submitting!")
     /* 
-    Please have the submit button POST to https://v0867.mocklab.io/rating with the following payload:
+    Please have the submit button POST to https://20e2q.mocklab.io/rating with the following payload:
 
       {
         "id": {#id},
