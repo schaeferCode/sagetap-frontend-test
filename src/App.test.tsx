@@ -1,5 +1,5 @@
 import { render, screen , fireEvent } from '@testing-library/react';
-import { App, ArtItem } from './App';
+import { App } from './App';
 
 test('has title', () => {
   render(<App />);
@@ -8,6 +8,7 @@ test('has title', () => {
 });
 
 test('for an art item, submit button is disabled until a rating is selected', () => {
+  
 });
 
 test('for an art item, clicking numbered button updates rating display below image to be that number', () => {
