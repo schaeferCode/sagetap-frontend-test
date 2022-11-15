@@ -7,10 +7,6 @@ test('has title', () => {
   expect(title).toBeInTheDocument();
 });
 
-test('for an art item, submit button is disabled until a rating is selected', () => {
-  
-});
-
 test('for an art item, clicking numbered button updates rating display below image to be that number', () => {
 });
 
