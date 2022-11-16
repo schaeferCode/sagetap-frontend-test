@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-async function getArtwork(id: number) {
+function getArtwork(id: number) {
   return fetch('https://api.artic.edu/api/v1/artworks/' + id);
 }
 
@@ -54,14 +54,14 @@ export function ArtItem({id}: { id: number }) {
   useEffect(() => {
     getArtwork(id).then(r => r.json()).then(json => setArtwork(json))
   }, [id]);
-
+  
   const handleButtonClick = (rating: number) => {
     return () => {
       setArtwork({...artwork, rating} as ArtWork)
       setVoted(true)
     }
   }
-
+  
   return (
     <div className="item">
       <h2>{artwork?.data.title}</h2>
