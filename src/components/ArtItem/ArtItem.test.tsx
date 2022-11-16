@@ -15,7 +15,7 @@ describe('ArtItem', () => {
     }))
   })
   it('submit button is disabled until rating is selected', async () => {
-    render(<ArtItem id={12345} />)
+    render(<ArtItem id={12345} handleRemoveClick={(e: any) => null} />)
     await screen.findByText('artist_title')
 
     const submit = screen.getByText('Submit')
@@ -27,7 +27,7 @@ describe('ArtItem', () => {
   })
 
   it('clicking numbered button updates rating display below image to be that number', async () => {
-    render(<ArtItem id={12345} />)
+    render(<ArtItem id={12345} handleRemoveClick={(e: any) => null} />)
     await screen.findByText('artist_title')
 
     const firstRatingButton = screen.getByText('1')
@@ -43,9 +43,19 @@ describe('ArtItem', () => {
     expect(rating).toHaveTextContent('Rating: 2')
   });
 
-  it('clicking submit POSTs update, displays a toast success message, hides buttons', () => {
-    // The endpoint and payload for the submit button can be found in the submit method in `App.tsx`.
-    // For the purpose of this test, please use a mock function instead.
+  it('clicking submit POSTs update, displays a toast success message, hides buttons', async () => {
+    fetchMock.mockOnce("Hurray!")
+    render(<ArtItem id={12345} handleRemoveClick={(e: any) => null} />)
+    await screen.findByText('artist_title')
+
+    const firstRatingButton = screen.getByText('1')
+    firstRatingButton.click()
+    const submit = await screen.findByText('Submit')
+    submit.click()
+
+    expect(await screen.findByText('Rating submission was successful')).toBeInTheDocument()
+    expect(screen.queryByText('Submit')).toHaveClass('invisible')
+    expect(screen.queryByText('1')).toHaveClass('disabled:invisible')
   });
 })
 

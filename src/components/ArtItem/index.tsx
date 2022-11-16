@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function getArtwork(id: number) {
   return fetch('https://api.artic.edu/api/v1/artworks/' + id);
@@ -19,9 +21,15 @@ type ArtWork = {
   rating: number
 }
 
-export function ArtItem({id}: { id: number }) {
+type ArtItemProps = {
+  id: number
+  handleRemoveClick(id: number): void
+}
+
+export function ArtItem({id, handleRemoveClick}: ArtItemProps) {
   const [voted, setVoted] = useState<boolean>(false)
   const [artwork, setArtwork] = useState<ArtWork>()
+  const [hasRated, setHasRated] = useState(false)
 
   const submit = () => {
     console.log("Submitting!")
@@ -47,6 +55,9 @@ export function ArtItem({id}: { id: number }) {
         rating: artwork?.rating
       }),
       method: "POST"
+    }).then(() => {
+      toast('Rating submission was successful');
+      setHasRated(true)
     })
   };
 
@@ -63,17 +74,32 @@ export function ArtItem({id}: { id: number }) {
   }
   
   return (
-    <div className="item">
-      <h2>{artwork?.data.title}</h2>
-      <h3>{artwork?.data.artist_title}</h3>
-      <img alt={artwork?.data.artist_display} style={ { width: 100 } } src={getImageUrl(artwork?.data.image_id) || ""} />
+    <li className="flex flex-col items-center border border-solid border-gray-70 p-5 shadow-md">
+      <h2 className="font-bold">{artwork?.data.title}</h2>
+      <h3 className="italic">{artwork?.data.artist_title}</h3>
+      <img className="w-full h-full object-cover" alt={artwork?.data.artist_display} src={getImageUrl(artwork?.data.image_id) || ""} />
       <p>Rating: {artwork?.rating}</p>
-      <button onClick={handleButtonClick(1)}>1</button>
-      <button onClick={handleButtonClick(2)}>2</button>
-      <button onClick={handleButtonClick(3)}>3</button>
-      <button onClick={handleButtonClick(4)}>4</button>
-      <button onClick={handleButtonClick(5)}>5</button>
-      <button disabled={!voted} onClick={submit}>Submit</button>
-    </div>
+      <div className="flex space-x-4">
+        <button disabled={hasRated} className="btn-primary disabled:invisible" onClick={handleButtonClick(1)}>1</button>
+        <button disabled={hasRated} className="btn-primary disabled:invisible" onClick={handleButtonClick(2)}>2</button>
+        <button disabled={hasRated} className="btn-primary disabled:invisible" onClick={handleButtonClick(3)}>3</button>
+        <button disabled={hasRated} className="btn-primary disabled:invisible" onClick={handleButtonClick(4)}>4</button>
+        <button disabled={hasRated} className="btn-primary disabled:invisible" onClick={handleButtonClick(5)}>5</button>
+        <button disabled={!voted} className={`btn-primary disabled:btn-primary__disabled ${hasRated ? 'invisible' : ''}`} onClick={submit}>Submit</button>
+        <button className="btn-primary" onClick={() => handleRemoveClick(id)}>Remove</button>
+      </div>
+      <ToastContainer
+        data-testid="toast"
+        position="top-center"
+        autoClose={3000}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </li>
   )
 }
