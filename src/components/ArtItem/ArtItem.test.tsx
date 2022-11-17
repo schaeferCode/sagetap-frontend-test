@@ -15,7 +15,7 @@ describe('ArtItem', () => {
     }))
   })
   it('submit button is disabled until rating is selected', async () => {
-    render(<ArtItem id={12345} handleRemoveClick={(e: any) => null} />)
+    render(<ArtItem id={12345} handleRemoveClick={(e: any) => null} setLoadingStatus={() => null} />)
     await screen.findByText('artist_title')
 
     const submit = screen.getByText('Submit')
@@ -27,7 +27,7 @@ describe('ArtItem', () => {
   })
 
   it('clicking numbered button updates rating display below image to be that number', async () => {
-    render(<ArtItem id={12345} handleRemoveClick={(e: any) => null} />)
+    render(<ArtItem id={12345} handleRemoveClick={(e: any) => null} setLoadingStatus={() => null} />)
     await screen.findByText('artist_title')
 
     const firstRatingButton = screen.getByText('1')
@@ -45,7 +45,7 @@ describe('ArtItem', () => {
 
   it('clicking submit POSTs update, displays a toast success message, hides buttons', async () => {
     fetchMock.mockOnce("Hurray!")
-    render(<ArtItem id={12345} handleRemoveClick={(e: any) => null} />)
+    render(<ArtItem id={12345} handleRemoveClick={(e: any) => null} setLoadingStatus={() => null} />)
     await screen.findByText('artist_title')
 
     const firstRatingButton = screen.getByText('1')

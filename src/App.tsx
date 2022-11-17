@@ -1,6 +1,7 @@
-import { useState, FormEventHandler, Suspense } from 'react';
+import { useState, FormEventHandler } from 'react';
 
 import { ArtItem } from './components/ArtItem';
+import { StatusOverlay } from './components/StatusOverlay';
 
 const initialArtList = [
   { id: 27992, disabled: false },
@@ -10,9 +11,16 @@ const initialArtList = [
   { id: 27993, disabled: false },
 ];
 
+export enum LOADING_STATUS {
+  LOADING = 'LOADING',
+  FINISHED = 'FINISHED',
+  FAILED = 'FAILED'
+}
+
 export function App() {
   const [artList, setArtList] = useState<{ id: number, disabled: boolean }[]>(initialArtList)
   const [newArtID, setNewArtID] = useState<string>()
+  const [loadingStatus, setLoadingStatus] = useState<LOADING_STATUS>(LOADING_STATUS.LOADING)
 
   const handleRemoveClick = (artID: number) => {
     const relevantArtIndex = artList.findIndex(({id}) => id === artID)
@@ -31,12 +39,13 @@ export function App() {
   }
 
   return (
-    <Suspense fallback={}>
+    <>
+      {loadingStatus !== LOADING_STATUS.FINISHED && <StatusOverlay loadingStatus={loadingStatus as Exclude<LOADING_STATUS, LOADING_STATUS.FINISHED>} />}
       <div className="flex flex-col items-center m-10">
         <h1 className="text-4xl mb-5">Art Rater</h1>
         <ul className="grid gap-4 grid-cols-2">
           {artList.map(({ id, disabled }) => (
-            disabled || <ArtItem key={id} id={id} handleRemoveClick={handleRemoveClick} />
+            disabled || <ArtItem key={id} id={id} handleRemoveClick={handleRemoveClick} setLoadingStatus={(loadingStatus: LOADING_STATUS) => setLoadingStatus(loadingStatus)} />
           ))}
         </ul>
         <form className="w-full flex justify-center sticky bottom-0 bg-gray-300 h-20 items-center" onSubmit={addArt}>
@@ -47,6 +56,6 @@ export function App() {
           <button disabled={!newArtID} className='btn-primary max-h-10 disabled:btn-primary__disabled'>Submit</button>
         </form>
       </div>
-    </Suspense>
+    </>
   );
 }

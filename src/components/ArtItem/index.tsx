@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { LOADING_STATUS } from '../../App';
 
 function getArtwork(id: number) {
   return fetch('https://api.artic.edu/api/v1/artworks/' + id);
@@ -24,15 +25,17 @@ type ArtWork = {
 type ArtItemProps = {
   id: number
   handleRemoveClick(id: number): void
+  setLoadingStatus(loadingStatus: LOADING_STATUS): void
 }
 
-export function ArtItem({id, handleRemoveClick}: ArtItemProps) {
+export function ArtItem({id, handleRemoveClick, setLoadingStatus}: ArtItemProps) {
   const [voted, setVoted] = useState<boolean>(false)
   const [artwork, setArtwork] = useState<ArtWork>()
   const [hasRated, setHasRated] = useState(false)
 
   const submit = () => {
     console.log("Submitting!")
+    setLoadingStatus(LOADING_STATUS.LOADING)
     /* 
     Please have the submit button POST to https://20e2q.mocklab.io/rating with the following payload:
 
@@ -58,12 +61,25 @@ export function ArtItem({id, handleRemoveClick}: ArtItemProps) {
     }).then(() => {
       toast('Rating submission was successful');
       setHasRated(true)
+      setLoadingStatus(LOADING_STATUS.FINISHED)
+    }).catch(() => {
+      setLoadingStatus(LOADING_STATUS.FAILED)
     })
   };
 
   
   useEffect(() => {
-    getArtwork(id).then(r => r.json()).then(json => setArtwork(json))
+    setLoadingStatus(LOADING_STATUS.LOADING)
+    getArtwork(id).then((r) => {
+      if (r.status !== 200) throw new Error("Not VALID!");
+      return r.json()
+    }).then((json) => {
+      console.log('herere')
+      setArtwork(json)
+      setLoadingStatus(LOADING_STATUS.FINISHED)
+    }).catch(() => {
+      setLoadingStatus(LOADING_STATUS.FAILED)
+    })
   }, [id]);
   
   const handleButtonClick = (rating: number) => {
