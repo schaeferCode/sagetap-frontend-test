@@ -74,7 +74,6 @@ export function ArtItem({id, handleRemoveClick, setLoadingStatus}: ArtItemProps)
       if (r.status !== 200) throw new Error("Not VALID!");
       return r.json()
     }).then((json) => {
-      console.log('herere')
       setArtwork(json)
       setLoadingStatus(LOADING_STATUS.FINISHED)
     }).catch(() => {
